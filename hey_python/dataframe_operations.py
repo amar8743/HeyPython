@@ -90,4 +90,5 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
         print(f"Error fetching data: {e}")
         return -1
     finally:
-        con.close()
+        #con.close()
+        print("Connection is released for reusability")
