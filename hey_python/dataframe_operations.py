@@ -2,6 +2,9 @@ import pandas as pd
 import utils
 import json
 import oracledb
+import warnings
+warnings.filterwarnings("ignore", message="Signature.*longdouble")
+
 
 def test_dataframe(table_name, column_name, operations, return_table_name=None):
     # Step 1: Establish connection
