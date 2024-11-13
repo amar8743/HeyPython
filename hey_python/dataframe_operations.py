@@ -13,7 +13,13 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
     try:
         # Step 2: Query data from the specified table and column
         query = f"SELECT {column_name} FROM {table_name}"
-        df = pd.read_sql(query, con)
+        cur = con.cursor()
+        cur.execute(query)
+        
+        # Fetch data and create a DataFrame
+        rows = cur.fetchall()
+        columns = [col[0] for col in cur.description]  # Get column names
+        df = pd.DataFrame(rows, columns=columns)
 
         # Step 3: Perform specified operations and prepare results in a dictionary
         results = {}
