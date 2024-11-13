@@ -27,6 +27,8 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
         # Step 3: Perform specified operations and prepare results in a dictionary
         results = {}
         try:
+            if "count" in operations:
+                results["count"] = df[column_name].count()
             if "sum" in operations:
                 results["sum"] = df[column_name].sum()
             if "mean" in operations:
