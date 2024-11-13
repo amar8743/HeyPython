@@ -12,14 +12,14 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
 
     try:
         # Step 2: Query data from the specified table and column
-        query = f"SELECT {column_name} FROM {table_name}"
+        query = f"SELECT CAST({column_name} AS FLOAT) FROM {table_name}"
         cur = con.cursor()
         cur.execute(query)
         
         # Fetch data and create a DataFrame
         rows = cur.fetchall()
         columns = [col[0] for col in cur.description]  # Get column names
-        df = pd.DataFrame(rows, columns=columns)
+        df = pd.to_numeric(df[column_name], errors='coerce').astype('float64')
 
         # Step 3: Perform specified operations and prepare results in a dictionary
         results = {}
