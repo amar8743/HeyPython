@@ -17,7 +17,16 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
         # Step 2: Query data from the specified table and column
         query = f"SELECT {column_name} FROM {table_name}"
         cur = con.cursor()
-        cur.execute(query)
+        # cur.execute(query)
+        cur.execute("SELECT USER FROM DUAL")
+        
+        # Fetch the result
+        result = cur.fetchone()[0]  # Fetches the first column of the first row
+
+        # Close the cursor and connection
+        cur.close()
+
+        return result 
         
         # Fetch data and create a DataFrame
         rows = cur.fetchall()
