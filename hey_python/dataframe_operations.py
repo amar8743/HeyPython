@@ -12,7 +12,7 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
 
     try:
         # Step 2: Query data from the specified table and column
-        query = f"SELECT CAST({column_name} AS FLOAT) FROM {table_name}"
+        query = f"SELECT {column_name} FROM {table_name}"
         cur = con.cursor()
         cur.execute(query)
         
@@ -38,16 +38,16 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
                 results["variance"] = df[column_name].var()
             if "median" in operations:
                 results["median"] = df[column_name].median()
-            if "kurtosis" in operations:
-                results["kurtosis"] = df[column_name].kurtosis()
-            if "skew" in operations:
-                results["skew"] = df[column_name].skew()
-            if "quantiles" in operations:
-                results["quantiles"] = df[column_name].quantile([0.25, 0.5, 0.75]).to_dict()
-            if "z_score" in operations:
-                results["z_score"] = ((df[column_name] - df[column_name].mean()) / df[column_name].std()).tolist()
-            if "exp_moving_avg" in operations:
-                results["exp_moving_avg"] = df[column_name].ewm(span=10, adjust=False).mean().tolist()
+            # if "kurtosis" in operations:
+            #     results["kurtosis"] = df[column_name].kurtosis()
+            # if "skew" in operations:
+            #     results["skew"] = df[column_name].skew()
+            # if "quantiles" in operations:
+            #     results["quantiles"] = df[column_name].quantile([0.25, 0.5, 0.75]).to_dict()
+            # if "z_score" in operations:
+            #     results["z_score"] = ((df[column_name] - df[column_name].mean()) / df[column_name].std()).tolist()
+            # if "exp_moving_avg" in operations:
+            #     results["exp_moving_avg"] = df[column_name].ewm(span=10, adjust=False).mean().tolist()
 
         except Exception as e:
             print(f"Error performing operations: {e}")
