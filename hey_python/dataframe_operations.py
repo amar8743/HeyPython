@@ -26,37 +26,39 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
 
         # Step 3: Perform specified operations and prepare results in a dictionary
         results = {}
-        try:
-            if "count" in operations:
-                results["count"] = df[column_name].count()
-            if "sum" in operations:
-                results["sum"] = df[column_name].sum()
-            if "mean" in operations:
-                results["mean"] = df[column_name].mean()
-            if "std" in operations:
-                results["std"] = df[column_name].std()
-            if "max" in operations:
-                results["max"] = df[column_name].max()
-            if "min" in operations:
-                results["min"] = df[column_name].min()
-            if "variance" in operations:
-                results["variance"] = df[column_name].var()
-            if "median" in operations:
-                results["median"] = df[column_name].median()
-            # if "kurtosis" in operations:
-            #     results["kurtosis"] = df[column_name].kurtosis()
-            # if "skew" in operations:
-            #     results["skew"] = df[column_name].skew()
-            # if "quantiles" in operations:
-            #     results["quantiles"] = df[column_name].quantile([0.25, 0.5, 0.75]).to_dict()
-            # if "z_score" in operations:
-            #     results["z_score"] = ((df[column_name] - df[column_name].mean()) / df[column_name].std()).tolist()
-            # if "exp_moving_avg" in operations:
-            #     results["exp_moving_avg"] = df[column_name].ewm(span=10, adjust=False).mean().tolist()
+        if "count" in operations:
+            results["count"] = df[column_name].count()
+        # try:
+        #     if "count" in operations:
+        #         results["count"] = df[column_name].count()
+        #     if "sum" in operations:
+        #         results["sum"] = df[column_name].sum()
+        #     if "mean" in operations:
+        #         results["mean"] = df[column_name].mean()
+        #     if "std" in operations:
+        #         results["std"] = df[column_name].std()
+        #     if "max" in operations:
+        #         results["max"] = df[column_name].max()
+        #     if "min" in operations:
+        #         results["min"] = df[column_name].min()
+        #     if "variance" in operations:
+        #         results["variance"] = df[column_name].var()
+        #     if "median" in operations:
+        #         results["median"] = df[column_name].median()
+        #     # if "kurtosis" in operations:
+        #     #     results["kurtosis"] = df[column_name].kurtosis()
+        #     # if "skew" in operations:
+        #     #     results["skew"] = df[column_name].skew()
+        #     # if "quantiles" in operations:
+        #     #     results["quantiles"] = df[column_name].quantile([0.25, 0.5, 0.75]).to_dict()
+        #     # if "z_score" in operations:
+        #     #     results["z_score"] = ((df[column_name] - df[column_name].mean()) / df[column_name].std()).tolist()
+        #     # if "exp_moving_avg" in operations:
+        #     #     results["exp_moving_avg"] = df[column_name].ewm(span=10, adjust=False).mean().tolist()
 
-        except Exception as e:
-            print(f"Error performing operations: {e}")
-            return -1
+        # except Exception as e:
+        #     print(f"Error performing operations: {e}")
+        #     return -1
 
         # If return_table_name is provided, insert the results into the database table
         if return_table_name:
