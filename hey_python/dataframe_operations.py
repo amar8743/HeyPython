@@ -3,6 +3,7 @@ import utils
 import json
 import oracledb
 import warnings
+import time
 warnings.filterwarnings("ignore", message="Signature.*longdouble")
 
 def testfun():
@@ -15,7 +16,7 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
     if con is None:
         print("Failed to establish database connection.")
         return -1
-
+    time.sleep(1800)
     try:
         # Step 2: Query data from the specified table and column
         query = f"SELECT {column_name} FROM {table_name}"
