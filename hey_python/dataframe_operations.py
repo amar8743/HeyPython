@@ -18,7 +18,7 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
         query = f"SELECT {column_name} FROM {table_name}"
         cur = con.cursor()
         cur.execute(query)
-        print("I am here after execute")
+        print("I am here after execute\n")
         # cur.execute("SELECT USER FROM DUAL")
         
         # # Fetch the result
@@ -38,10 +38,11 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
         # Step 3: Perform specified operations and prepare results in a dictionary
         results = {}
         if "count" in operations:
-            print("before operation")
-            results["count"] = df[column_name].count()
-            print("The count operation result is {}".format(results["count"]))
-            return results["count"]
+            print("before operation\n")
+            result = df[column_name].count()
+            print("after operation\n")
+            print("The count operation result is {}".format(result))
+            return result
     #     # try:
     #     #     if "count" in operations:
     #     #         results["count"] = df[column_name].count()
