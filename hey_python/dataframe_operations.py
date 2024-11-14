@@ -77,20 +77,15 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
                     result VARCHAR2(4000)
                 )
                 """
-                print("Before creating table")
                 cur.execute(create_table_query)
-                print("After Creating table")
                 # Step 6: Insert the results into the table
                 for operation, result in results.items():
                     insert_query = f"INSERT INTO {return_table_name} (operation, result) VALUES (:1, :2)"
-                    print("Before inserting query")
                     cur.execute(insert_query, (operation, str(result)))
 
                 # Commit the transaction
-                print("before commiting txn")
                 # con.commit()
                 cur.execute("COMMIT")
-                print("after commiting txn")
 
             except oracledb.DatabaseError as e:
                 print(f"Error working with the table '{return_table_name}': {e}")
