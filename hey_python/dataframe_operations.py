@@ -17,29 +17,27 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
         # Step 2: Query data from the specified table and column
         query = f"SELECT {column_name} FROM {table_name}"
         cur = con.cursor()
-        # cur.execute(query)
-        cur.execute("SELECT USER FROM DUAL")
+        cur.execute(query)
+        # cur.execute("SELECT USER FROM DUAL")
         
-        # Fetch the result
-        result = cur.fetchone()[0]  # Fetches the first column of the first row
+        # # Fetch the result
+        # result = cur.fetchone()[0]  # Fetches the first column of the first row
 
-        # Close the cursor and connection
-        cur.close()
+        # # Close the cursor and connection
+        # cur.close()
 
-        return result 
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        return -1
+
         
         # Fetch data and create a DataFrame
-    #     rows = cur.fetchall()
-    #     columns = [col[0] for col in cur.description]  # Get column names
-    #     df = pd.DataFrame(rows, columns=columns)
+        rows = cur.fetchall()
+        columns = [col[0] for col in cur.description]  # Get column names
+        df = pd.DataFrame(rows, columns=columns)
 
-    #     # Step 3: Perform specified operations and prepare results in a dictionary
-    #     results = {}
-    #     if "count" in operations:
-    #         results["count"] = df[column_name].count()
+        # Step 3: Perform specified operations and prepare results in a dictionary
+        results = {}
+        if "count" in operations:
+            results["count"] = df[column_name].count()
+            print("The count operation result is {}".format(results["count"]))
     #     # try:
     #     #     if "count" in operations:
     #     #         results["count"] = df[column_name].count()
@@ -111,9 +109,9 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
     #     else:
     #         return json.dumps(results, default=str)
 
-    # except Exception as e:
-    #     print(f"Error fetching data: {e}")
-    #     return -1
-    # finally:
-    #     #con.close()
-    #     print("Connection is released for reusability")
+    except Exception as e:
+        print(f"Error fetching data: {e}")
+        return -1
+    finally:
+        #con.close()
+        print("Connection is released for reusability")
