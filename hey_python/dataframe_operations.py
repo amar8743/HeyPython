@@ -38,6 +38,7 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
         if "count" in operations:
             results["count"] = df[column_name].count()
             print("The count operation result is {}".format(results["count"]))
+            return results["count"]
     #     # try:
     #     #     if "count" in operations:
     #     #         results["count"] = df[column_name].count()
