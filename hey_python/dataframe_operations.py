@@ -23,7 +23,6 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
         rows = cur.fetchall()
         columns = [col[0] for col in cur.description]  # Get column names
         df = pd.DataFrame(rows, columns=columns)
-        print("After converting dataframe")
 
         # Step 3: Perform specified operations and prepare results in a dictionary
         results = {}
@@ -101,6 +100,3 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
     except Exception as e:
         print(f"Error fetching data: {e}")
         return -1
-    finally:
-        #con.close()
-        print("Connection is released for reusability")
