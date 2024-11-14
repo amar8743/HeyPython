@@ -88,7 +88,7 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
 
                 # Commit the transaction
                 print("before commiting txn")
-                con.commit()
+                # con.commit()
                 print("after commiting txn")
 
             except oracledb.DatabaseError as e:
