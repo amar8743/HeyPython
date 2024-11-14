@@ -18,16 +18,6 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
         query = f"SELECT {column_name} FROM {table_name}"
         cur = con.cursor()
         cur.execute(query)
-        print("I am here after execute\n")
-        # cur.execute("SELECT USER FROM DUAL")
-        
-        # # Fetch the result
-        # result = cur.fetchone()[0]  # Fetches the first column of the first row
-
-        # # Close the cursor and connection
-        # cur.close()
-
-
         
         # Fetch data and create a DataFrame
         rows = cur.fetchall()
@@ -37,82 +27,76 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
 
         # Step 3: Perform specified operations and prepare results in a dictionary
         results = {}
-        if "count" in operations:
-            print("before operation\n")
-            result = df[column_name].count()
-            print("after operation\n")
-            print("The count operation result is {}".format(result))
-            return str(result)
-    #     # try:
-    #     #     if "count" in operations:
-    #     #         results["count"] = df[column_name].count()
-    #     #     if "sum" in operations:
-    #     #         results["sum"] = df[column_name].sum()
-    #     #     if "mean" in operations:
-    #     #         results["mean"] = df[column_name].mean()
-    #     #     if "std" in operations:
-    #     #         results["std"] = df[column_name].std()
-    #     #     if "max" in operations:
-    #     #         results["max"] = df[column_name].max()
-    #     #     if "min" in operations:
-    #     #         results["min"] = df[column_name].min()
-    #     #     if "variance" in operations:
-    #     #         results["variance"] = df[column_name].var()
-    #     #     if "median" in operations:
-    #     #         results["median"] = df[column_name].median()
-    #     #     # if "kurtosis" in operations:
-    #     #     #     results["kurtosis"] = df[column_name].kurtosis()
-    #     #     # if "skew" in operations:
-    #     #     #     results["skew"] = df[column_name].skew()
-    #     #     # if "quantiles" in operations:
-    #     #     #     results["quantiles"] = df[column_name].quantile([0.25, 0.5, 0.75]).to_dict()
-    #     #     # if "z_score" in operations:
-    #     #     #     results["z_score"] = ((df[column_name] - df[column_name].mean()) / df[column_name].std()).tolist()
-    #     #     # if "exp_moving_avg" in operations:
-    #     #     #     results["exp_moving_avg"] = df[column_name].ewm(span=10, adjust=False).mean().tolist()
+        try:
+            if "count" in operations:
+                results["count"] = df[column_name].count()
+            if "sum" in operations:
+                results["sum"] = df[column_name].sum()
+            if "mean" in operations:
+                results["mean"] = df[column_name].mean()
+            if "std" in operations:
+                results["std"] = df[column_name].std()
+            if "max" in operations:
+                results["max"] = df[column_name].max()
+            if "min" in operations:
+                results["min"] = df[column_name].min()
+            if "variance" in operations:
+                results["variance"] = df[column_name].var()
+            if "median" in operations:
+                results["median"] = df[column_name].median()
+            if "kurtosis" in operations:
+                results["kurtosis"] = df[column_name].kurtosis()
+            if "skew" in operations:
+                results["skew"] = df[column_name].skew()
+            if "quantiles" in operations:
+                results["quantiles"] = df[column_name].quantile([0.25, 0.5, 0.75]).to_dict()
+            if "z_score" in operations:
+                results["z_score"] = ((df[column_name] - df[column_name].mean()) / df[column_name].std()).tolist()
+            if "exp_moving_avg" in operations:
+                results["exp_moving_avg"] = df[column_name].ewm(span=10, adjust=False).mean().tolist()
 
-    #     # except Exception as e:
-    #     #     print(f"Error performing operations: {e}")
-    #     #     return -1
+        except Exception as e:
+            print(f"Error performing operations: {e}")
+            return -1
 
-    #     # If return_table_name is provided, insert the results into the database table
-    #     if return_table_name:
-    #         cur = con.cursor()
-    #         try:
-    #             # Step 4: Check if the table already exists
-    #             cur.execute(f"SELECT COUNT(*) FROM all_tables WHERE table_name = UPPER('{return_table_name}')")
-    #             table_exists = cur.fetchone()[0] > 0
+        # If return_table_name is provided, insert the results into the database table
+        if return_table_name:
+            cur = con.cursor()
+            try:
+                # Step 4: Check if the table already exists
+                cur.execute(f"SELECT COUNT(*) FROM all_tables WHERE table_name = UPPER('{return_table_name}')")
+                table_exists = cur.fetchone()[0] > 0
 
-    #             if table_exists:
-    #                 print(f"Table '{return_table_name}' already exists. Please drop the table or provide a new table name.")
-    #                 return -1
+                if table_exists:
+                    print(f"Table '{return_table_name}' already exists. Please drop the table or provide a new table name.")
+                    return -1
 
-    #             # Step 5: Create the table if it doesn't exist
-    #             create_table_query = f"""
-    #             CREATE TABLE {return_table_name} (
-    #                 operation VARCHAR2(100),
-    #                 result VARCHAR2(4000)
-    #             )
-    #             """
-    #             cur.execute(create_table_query)
+                # Step 5: Create the table if it doesn't exist
+                create_table_query = f"""
+                CREATE TABLE {return_table_name} (
+                    operation VARCHAR2(100),
+                    result VARCHAR2(4000)
+                )
+                """
+                cur.execute(create_table_query)
 
-    #             # Step 6: Insert the results into the table
-    #             for operation, result in results.items():
-    #                 insert_query = f"INSERT INTO {return_table_name} (operation, result) VALUES (:1, :2)"
-    #                 cur.execute(insert_query, (operation, str(result)))
+                # Step 6: Insert the results into the table
+                for operation, result in results.items():
+                    insert_query = f"INSERT INTO {return_table_name} (operation, result) VALUES (:1, :2)"
+                    cur.execute(insert_query, (operation, str(result)))
 
-    #             # Commit the transaction
-    #             con.commit()
+                # Commit the transaction
+                con.commit()
 
-    #         except oracledb.DatabaseError as e:
-    #             print(f"Error working with the table '{return_table_name}': {e}")
-    #             return -1
-    #         finally:
-    #             cur.close()
+            except oracledb.DatabaseError as e:
+                print(f"Error working with the table '{return_table_name}': {e}")
+                return -1
+            finally:
+                cur.close()
 
-    #     # Step 7: Return the results as a JSON object
-    #     else:
-    #         return json.dumps(results, default=str)
+        # Step 7: Return the results as a JSON object
+        else:
+            return json.dumps(results, default=str)
 
     except Exception as e:
         print(f"Error fetching data: {e}")
