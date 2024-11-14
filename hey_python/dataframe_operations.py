@@ -8,7 +8,7 @@ warnings.filterwarnings("ignore", message="Signature.*longdouble")
 
 def test_dataframe(table_name, column_name, operations, return_table_name=None):
     # Step 1: Establish connection
-    print("Testing dataframe")
+    # print("This is one debug statement")
     con = utils.getconnection()
     if con is None:
         print("Failed to establish database connection.")
