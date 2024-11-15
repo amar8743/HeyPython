@@ -11,12 +11,12 @@ def testfun():
 
 def test_dataframe(table_name, column_name, operations, return_table_name=None):
     # Step 1: Establish connection
-    # print("This is one debug statement")
+    print("This is the test debug statement")
     con = utils.getconnection()
     if con is None:
         print("Failed to establish database connection.")
         return -1
-    time.sleep(1800)
+    #time.sleep(1800)
     try:
         # Step 2: Query data from the specified table and column
         query = f"SELECT {column_name} FROM {table_name}"
