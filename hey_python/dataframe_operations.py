@@ -11,7 +11,6 @@ def testfun():
 
 def test_dataframe(table_name, column_name, operations, return_table_name=None):
     # Step 1: Establish connection
-    print("This is the test debug statement")
     con = utils.getconnection()
     if con is None:
         print("Failed to establish database connection.")
