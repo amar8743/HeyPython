@@ -14,7 +14,7 @@ def update_festive_bonus(bonus_dollars):
 
     # Conversion rates and symbols
     region_to_currency = {
-        "India": {"rate": 40, "symbol": "Rs."},  # 1 USD = 80 INR
+        "India": {"rate": 80, "symbol": "Rs."},  # 1 USD = 80 INR
         "USA": {"rate": 1, "symbol": "$"},    # 1 USD = 1 USD
         "Europe": {"rate": 0.9, "symbol": "€"}, # 1 USD = 0.9 EUR
         "Japan": {"rate": 150, "symbol": "¥"}  # 1 USD = 150 JPY
