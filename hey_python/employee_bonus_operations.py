@@ -34,7 +34,7 @@ def update_festive_bonus(bonus_dollars):
             if region in region_to_currency:
                 debug_flag = false
                 conversion = region_to_currency[region]
-                if region == "India" && !debug_flag :
+                if region == "India" and not debug_flag :
                     print("Converstion rate for {} is {}\n".format(region, conversion["rate"]))
                     debug_flag = true
                 converted_amount = bonus_dollars * conversion["rate"]
