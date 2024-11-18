@@ -48,13 +48,11 @@ def update_festive_bonus(bonus_dollars):
             cur.execute(update_query, {"festive_bonus": festive_bonus, "emp_id": emp_id})
 
         # Commit changes
-        con.commit()
+        con.execute("COMMIT")
         print("Festive bonuses updated successfully!")
 
     except Exception as e:
         print("An error occurred:", e)
-        if con:
-            con.rollback()
     finally:
         # Close the connection
         if cur:
