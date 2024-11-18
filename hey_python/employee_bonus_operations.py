@@ -14,7 +14,7 @@ def update_festive_bonus(bonus_dollars):
 
     # Conversion rates and symbols
     region_to_currency = {
-        "India": {"rate": 80, "symbol": "Rs."},  # 1 USD = 80 INR
+        "India": {"rate": 40, "symbol": "Rs."},  # 1 USD = 80 INR
         "USA": {"rate": 1, "symbol": "$"},    # 1 USD = 1 USD
         "Europe": {"rate": 0.9, "symbol": "€"}, # 1 USD = 0.9 EUR
         "Japan": {"rate": 150, "symbol": "¥"}  # 1 USD = 150 JPY
@@ -29,9 +29,9 @@ def update_festive_bonus(bonus_dollars):
         query = "SELECT emp_id, region FROM EMPLOYEE_BONUS"
         cur.execute(query)
         employees = cur.fetchall()
+        debug_flag = False
 
         for emp_id, region in employees:
-            debug_flag = False
             if region in region_to_currency:
                 conversion = region_to_currency[region]
                 if region == "India" and not debug_flag :
