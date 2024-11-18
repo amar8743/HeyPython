@@ -33,7 +33,8 @@ def update_festive_bonus(bonus_dollars):
         for emp_id, region in employees:
             if region in region_to_currency:
                 conversion = region_to_currency[region]
-                print("Converstion rate for {} is {}\n".format(region, conversion["rate"]))
+                if region = "India" :
+                    print("Converstion rate for {} is {}\n".format(region, conversion["rate"]))
                 converted_amount = bonus_dollars * conversion["rate"]
                 festive_bonus = f"{conversion['symbol']}{converted_amount:,.2f}"
             else:
