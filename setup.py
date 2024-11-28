@@ -6,7 +6,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         'pandas',
-        'oracledb'
+        'oracledb',
+        'pyarrow'
     ],
     description="A Python package for performing data operations and interacting with Oracle DB",
     long_description=open('README.md').read(),
