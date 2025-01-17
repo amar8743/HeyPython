@@ -24,12 +24,12 @@ def test_dataframe(table_name, column_name, operations, return_table_name=None):
         cur.execute(query)
         
         # Fetch data and create a DataFrame
-        #rows = cur.fetchall()
-        rows = cur.fetch_arrow_all()
+        rows = cur.fetchall()
+        #rows = cur.fetch_arrow_all()
         columns = [col[0] for col in cur.description]  # Get column names
-        pyarrow_table = pa.Table.from_arrays(rows, names=columns)
-        #df = pd.DataFrame(rows, columns=columns)
-        df = pyarrow_table.to_pandas()
+        # pyarrow_table = pa.Table.from_arrays(rows, names=columns)
+        df = pd.DataFrame(rows, columns=columns)
+        #df = pyarrow_table.to_pandas()
         # Step 3: Perform specified operations and prepare results in a dictionary
         results = {}
         try:
