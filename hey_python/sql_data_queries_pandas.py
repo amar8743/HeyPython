@@ -16,11 +16,11 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
 
     df_orders_details = df_orders_details.round(2)
 
-    df_sales = df_orders_details[['ORDATE','EMPL', 'TOTAL', 'OFF']]
+    df_sales = df_orders_details[['ORDATE','CUSTOMER', 'TOTAL', 'OFF']]
 
-    df_date_empl = df_sales.groupby(['ORDATE','EMPL']).sum()
+    df_date_empl = df_sales.groupby(['ORDATE','CUSTOMER']).sum()
 
-    df_aggs = df_sales.groupby(['ORDATE','EMPL']).agg({'TOTAL': ['sum', 'mean'], 'OFF': 'max'}).round(2)
+    df_aggs = df_sales.groupby(['ORDATE','CUSTOMER']).agg({'TOTAL': ['sum', 'mean'], 'OFF': 'max'}).round(2)
 
     df_aggs.columns = df_aggs.columns.map('_'.join).str.strip()
 
@@ -51,15 +51,15 @@ def saveAggSales(agg_df, return_table_name=None):
             CREATE TABLE {return_table_name} (
                 or_date VARCHAR2(100),
                 customer VARCHAR2(4000),
-                total_sum NUMBER,
-                total_mean NUMBER,
-                off_max NUMBER
+                total_sum NUMBER(6,2),
+                total_mean NUMBER(6,2),
+                off_max NUMBER(6,2)
             )
             """
             cur.execute(create_table_query)
 
             # Step 5.5: Define column order
-            column_order = ["ORDATE", "EMPL", "TOTAL_sum", "TOTAL_mean", "OFF_max"]
+            column_order = ["ORDATE", "CUSTOMER", "TOTAL_sum", "TOTAL_mean", "OFF_max"]
 
             # Step 6: Insert the results into the table
             for row in agg_df.iterrows()
