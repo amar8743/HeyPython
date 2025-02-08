@@ -25,10 +25,11 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
     df_aggs.columns = df_aggs.columns.map('_'.join).str.strip()
 
     saveAggSales(df_aggs)
+    print("Done updating sales", file=sys.stderr)
 
     except Exception as e:
         print(f"Error fetching data: {e}")
-        return -1
+        #return -1
 
 def saveAggSales(agg_df, return_table_name=None):
     if return_table_name:
