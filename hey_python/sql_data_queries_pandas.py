@@ -31,9 +31,9 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
     print("Done updating sales", file=sys.stderr)
     logToFile("Done updating sales")
 
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        #return -1
+    # except Exception as e:
+    #     print(f"Error fetching data: {e}")
+    #     #return -1
 
 def saveAggSales(agg_df, return_table_name=None):
     if return_table_name:
