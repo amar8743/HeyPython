@@ -26,8 +26,9 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
 
     df_aggs.columns = df_aggs.columns.map('_'.join).str.strip()
 
-    saveAggSales(df_aggs, return_table_name)
+    #saveAggSales(df_aggs, return_table_name)
     print("Done updating sales", file=sys.stderr)
+    logToFile("Done updating sales")
 
     except Exception as e:
         print(f"Error fetching data: {e}")
@@ -69,6 +70,7 @@ def saveAggSales(agg_df, return_table_name=None):
                 parameter_list = []
                 for col in column_order:
                     print(f"{col}: {row[col]}: {type(row[col])}", file=sys.stderr)
+                    logToFile("print col data")
                     parameter_list.append(row[col])                    
 
                 insert_query = f"INSERT INTO {return_table_name} (or_date, customer, total_sum, total_mean, off_max) VALUES (:1, :2, :3, :4, :5)"
@@ -96,6 +98,7 @@ def saveAggSales(agg_df, return_table_name=None):
 
 def get_dataframe(table_name):
     print("get_dataframe", file=sys.stderr)
+    logToFile("get_dataframe")
     # Step 1: Establish connection
     con = utils.getconnection()
     if con is None:
@@ -120,3 +123,8 @@ def get_dataframe(table_name):
         return -1
     finally:
         cur.close()
+
+def logToFile(str):
+    f = open("demofile2.txt", "a")
+    f.write(str)
+    f.close()
