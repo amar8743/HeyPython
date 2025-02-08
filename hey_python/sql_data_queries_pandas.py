@@ -91,7 +91,7 @@ def saveAggSales(agg_df, return_table_name=None):
     else:
         return json.dumps(results, default=str)
 
-def get_dataframe(table_name, column_name, operations, return_table_name=None):
+def get_dataframe(table_name):
     # Step 1: Establish connection
     con = utils.getconnection()
     if con is None:
@@ -100,7 +100,7 @@ def get_dataframe(table_name, column_name, operations, return_table_name=None):
     #time.sleep(1800)
     try:
         # Step 2: Query data from the specified table and column
-        query = f"SELECT {column_name} FROM {table_name}"
+        query = f"SELECT * FROM {table_name}"
         cur = con.cursor()
         cur.execute(query)
 
