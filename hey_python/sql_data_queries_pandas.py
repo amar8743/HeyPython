@@ -125,6 +125,6 @@ def get_dataframe(table_name):
         cur.close()
 
 def logToFile(str):
-    f = open("demofile2.txt", "a")
+    f = open("/tmp/demofile2.txt", "a")
     f.write(str)
     f.close()
