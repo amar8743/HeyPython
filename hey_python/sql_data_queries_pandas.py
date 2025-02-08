@@ -5,6 +5,8 @@ import oracledb
 import warnings
 
 def get_agg_sales(orders_table_name, details_table_name, return_table_name=None):
+    print("Start", file=sys.stderr)
+
     df_orders = get_dataframe(orders_table_name)
     df_details = get_dataframe(details_table_name)
 
@@ -24,7 +26,7 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
 
     df_aggs.columns = df_aggs.columns.map('_'.join).str.strip()
 
-    saveAggSales(df_aggs)
+    saveAggSales(df_aggs, return_table_name)
     print("Done updating sales", file=sys.stderr)
 
     except Exception as e:
@@ -93,7 +95,7 @@ def saveAggSales(agg_df, return_table_name=None):
         return json.dumps(results, default=str)
 
 def get_dataframe(table_name):
-    print("get_datafram", file=sys.stderr)
+    print("get_dataframe", file=sys.stderr)
     # Step 1: Establish connection
     con = utils.getconnection()
     if con is None:
