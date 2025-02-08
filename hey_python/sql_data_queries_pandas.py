@@ -65,12 +65,12 @@ def saveAggSales(agg_df, return_table_name=None):
             for row in agg_df.iterrows()
                 parameter_list = []
                 for col in column_order:
-                    print(f"{col}: {row[col]}: {type(row[col])}")
+                    print(f"{col}: {row[col]}: {type(row[col])}", file=sys.stderr)
                     parameter_list.append(row[col])                    
 
                 insert_query = f"INSERT INTO {return_table_name} (or_date, customer, total_sum, total_mean, off_max) VALUES (:1, :2, :3, :4, :5)"
-                print(tuple(parameter_list))
-                print("\n")
+                print(tuple(parameter_list), file=sys.stderr)
+                print("\n", file=sys.stderr)
                 #cur.execute(insert_query, tuple(parameter_list))
 
             # # Step 6: Insert the results into the table
@@ -92,6 +92,7 @@ def saveAggSales(agg_df, return_table_name=None):
         return json.dumps(results, default=str)
 
 def get_dataframe(table_name):
+    print("get_datafram", file=sys.stderr)
     # Step 1: Establish connection
     con = utils.getconnection()
     if con is None:
