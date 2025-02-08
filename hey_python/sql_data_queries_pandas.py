@@ -3,6 +3,7 @@ import utils
 import json
 import oracledb
 import warnings
+import sys
 
 def get_agg_sales(orders_table_name, details_table_name, return_table_name=None):
     print("Start", file=sys.stderr)
