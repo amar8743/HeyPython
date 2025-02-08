@@ -67,7 +67,7 @@ def saveAggSales(agg_df, return_table_name=None):
             column_order = ["ORDATE", "CUSTOMER", "TOTAL_sum", "TOTAL_mean", "OFF_max"]
 
             # Step 6: Insert the results into the table
-            for row in agg_df.iterrows()
+            for row in agg_df.iterrows():
                 parameter_list = []
                 for col in column_order:
                     print(f"{col}: {row[col]}: {type(row[col])}", file=sys.stderr)
