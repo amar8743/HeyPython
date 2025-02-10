@@ -7,7 +7,8 @@ setup(
     install_requires=[
         'pandas',
         'oracledb',
-        'pyarrow'
+        'pyarrow',
+        'yfinance'
     ],
     description="A Python package for performing data operations and interacting with Oracle DB",
     long_description=open('README.md').read(),

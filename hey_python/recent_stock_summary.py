@@ -1,7 +1,7 @@
 import pandas as pd
 import yfinance as yf
 
-def getData():
+def getData(orders_table_name):
     stocks = pd.DataFrame()
     tickers = ['AMZN']
     for ticker in tickers:
@@ -9,7 +9,6 @@ def getData():
         hist = tkr.history(period='1d')
         hist['Symbol']=ticker
         stocks = stocks.append(hist[['Symbol', 'Close']].rename(columns={'Close': 'Price'}))
-
 
     stocks.head(3).to_json("demoout.json", orient="records", indent=4)
 
