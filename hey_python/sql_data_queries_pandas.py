@@ -58,7 +58,7 @@ def saveAggSales(agg_df, return_table_name=None):
                 )
                 """
                 cur.execute(create_table_query)
-            else 
+            else:
                 print(f"Table '{return_table_name}' already exists. Please drop the table or provide a new table name.", file=sys.stderr)
                 return
 
