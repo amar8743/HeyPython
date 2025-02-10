@@ -5,12 +5,7 @@ import oracledb
 import warnings
 import sys
 
-def test():
-    print("Hello world", file=sys.stderr)
-
 def get_agg_sales(orders_table_name, details_table_name, return_table_name=None):
-    print("Start", file=sys.stderr)
-
     df_orders = get_dataframe(orders_table_name)
     df_details = get_dataframe(details_table_name)
 
@@ -26,17 +21,13 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
 
     df_date_empl = df_sales.groupby(['ORDATE','CUSTOMER']).sum()
 
-    df_aggs = df_sales.groupby(['ORDATE','CUSTOMER']).agg({'TOTAL': ['sum', 'mean'], 'OFF': 'max'}).round(2)
+    df_aggs = df_sales.groupby(['ORDATE','CUSTOMER']).agg({'TOTAL': ['sum', 'mean'], 'OFF': 'max'}).round(2).reset_index()
 
-    df_aggs.columns = df_aggs.columns.map('_'.join).str.strip()
+    #df_aggs.columns = df_aggs.columns.map('_'.join).str.strip()
+    df_aggs.columns = ["_".join(item) if not isinstance(item, str) else item.strip() for item in df_aggs.columns]
 
     saveAggSales(df_aggs, return_table_name)
-    print("Done updating sales", file=sys.stderr)
-    logToFile("Done updating sales")
-
-    # except Exception as e:
-    #     print(f"Error fetching data: {e}")
-    #     #return -1
+    print("Done processing sales\n")
 
 def saveAggSales(agg_df, return_table_name=None):
     if return_table_name:
@@ -50,45 +41,28 @@ def saveAggSales(agg_df, return_table_name=None):
             cur.execute(f"SELECT COUNT(*) FROM all_tables WHERE table_name = UPPER('{return_table_name}')")
             table_exists = cur.fetchone()[0] > 0
 
-            if table_exists:
-                print(f"Table '{return_table_name}' already exists. Please drop the table or provide a new table name.")
-                return -1
-
-            # Step 5: Create the table if it doesn't exist
-            create_table_query = f"""
-            CREATE TABLE {return_table_name} (
-                or_date VARCHAR2(100),
-                customer VARCHAR2(4000),
-                total_sum NUMBER(6,2),
-                total_mean NUMBER(6,2),
-                off_max NUMBER(6,2)
-            )
-            """
-            cur.execute(create_table_query)
-
-            # Step 5.5: Define column order
-            column_order = ["ORDATE", "CUSTOMER", "TOTAL_sum", "TOTAL_mean", "OFF_max"]
+            if not table_exists:
+                # Step 5: Create the table if it doesn't exist
+                logToFile(str(table_exists) + "\n")
+                create_table_query = f"""
+                CREATE TABLE {return_table_name} (
+                    or_date VARCHAR2(100),
+                    customer VARCHAR2(4000),
+                    total_sum NUMBER(6,2),
+                    total_mean NUMBER(6,2),
+                    off_max NUMBER(6,2)
+                )
+                """
+                cur.execute(create_table_query)
 
             # Step 6: Insert the results into the table
-            for row in agg_df.iterrows():
-                parameter_list = []
-                for col in column_order:
-                    print(f"{col}: {row[col]}: {type(row[col])}", file=sys.stderr)
-                    logToFile("print col data")
-                    parameter_list.append(row[col])                    
-
+            for row in agg_df.itertuples(index=False):
                 insert_query = f"INSERT INTO {return_table_name} (or_date, customer, total_sum, total_mean, off_max) VALUES (:1, :2, :3, :4, :5)"
-                print(tuple(parameter_list), file=sys.stderr)
-                print("\n", file=sys.stderr)
-                #cur.execute(insert_query, tuple(parameter_list))
-
-            # # Step 6: Insert the results into the table
-            # # for operation, result in results.items():
-            # #     insert_query = f"INSERT INTO {return_table_name} (operation, result, ) VALUES (:1, :2)"
-            # #     cur.execute(insert_query, (operation, str(result)))
+                param_list = [row.ORDATE_, row.CUSTOMER_, row.TOTAL_sum, row.TOTAL_mean, row.OFF_max]
+                cur.execute(insert_query, param_list)
 
             # # Commit the transaction
-            # cur.execute("COMMIT")
+            cur.execute("COMMIT")
 
         except oracledb.DatabaseError as e:
             print(f"Error working with the table '{return_table_name}': {e}")
@@ -101,9 +75,7 @@ def saveAggSales(agg_df, return_table_name=None):
         return json.dumps(results, default=str)
 
 def get_dataframe(table_name):
-    print(f"get_dataframe: {table_name}\n", file=sys.stderr)
-    logToFile("get_dataframe\n")
-    logToFile(table_name + "\n")
+    print(f"get_dataframe: {table_name} \n")
     # Step 1: Establish connection
     con = utils.getconnection()
     if con is None:
@@ -116,21 +88,16 @@ def get_dataframe(table_name):
         cur = con.cursor()
         cur.execute(query)
 
-
         # Fetch data and create a DataFrame
         rows = cur.fetchall()
         #rows = cur.fetch_arrow_all()
         columns = [col[0] for col in cur.description]  # Get column names
-        # pyarrow_table = pa.Table.from_arrays(rows, names=columns)
-        logToFile("before df\n")
-        df = pd.DataFrame(rows, columns=columns)
-        logToFile("df\n")
 
-        logToFile(table_name + " : " + df.size)
-        logToFile("Success\n")
+        # pyarrow_table = pa.Table.from_arrays(rows, names=columns)
+        df = pd.DataFrame(rows, columns=columns)
+        return df
     except Exception as e:
         print(f"Error fetching data: {e}", file=sys.stderr)
-        logToFile(str(e))
         return -1
     finally:
         cur.close()
