@@ -47,11 +47,11 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
 
     df_orders_details = df_orders_details.round(2)
 
-    df_sales = df_orders_details[['ORDATE','CUSTOMER', 'TOTAL', 'OFF']]
+    df_sales = df_orders_details[['ORDATE','EMPL', 'TOTAL', 'OFF']]
 
-    df_date_empl = df_sales.groupby(['ORDATE','CUSTOMER']).sum()
+    df_date_empl = df_sales.groupby(['ORDATE','EMPL']).sum()
 
-    df_aggs = df_sales.groupby(['ORDATE','CUSTOMER']).agg({'TOTAL': ['sum', 'mean'], 'OFF': 'max'}).round(2).reset_index()
+    df_aggs = df_sales.groupby(['ORDATE','EMPL']).agg({'TOTAL': ['sum', 'mean'], 'OFF': 'max'}).round(2).reset_index()
 
     df_aggs.columns = ["_".join(item) if not isinstance(item, str) else item.strip() for item in df_aggs.columns]
 
@@ -78,7 +78,7 @@ def saveAggSales(agg_df, return_table_name=None):
                 create_table_query = f"""
                 CREATE TABLE {return_table_name} (
                     or_date VARCHAR2(100),
-                    customer VARCHAR2(4000),
+                    empl VARCHAR2(4000),
                     total_sum NUMBER(6,2),
                     total_mean NUMBER(6,2),
                     off_max NUMBER(6,2)
@@ -91,8 +91,8 @@ def saveAggSales(agg_df, return_table_name=None):
 
             # Step 5: Insert the results into the table
             for row in agg_df.itertuples(index=False):
-                insert_query = f"INSERT INTO {return_table_name} (or_date, customer, total_sum, total_mean, off_max) VALUES (:1, :2, :3, :4, :5)"
-                param_list = [row.ORDATE_, row.CUSTOMER_, row.TOTAL_sum, row.TOTAL_mean, row.OFF_max]
+                insert_query = f"INSERT INTO {return_table_name} (or_date, empl, total_sum, total_mean, off_max) VALUES (:1, :2, :3, :4, :5)"
+                param_list = [row.ORDATE_, row.EMPL_, row.TOTAL_sum, row.TOTAL_mean, row.OFF_max]
                 cur.execute(insert_query, param_list)
 
             # Commit the transaction
