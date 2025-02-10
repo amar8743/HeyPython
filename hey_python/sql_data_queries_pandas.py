@@ -23,7 +23,6 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
 
     df_aggs = df_sales.groupby(['ORDATE','CUSTOMER']).agg({'TOTAL': ['sum', 'mean'], 'OFF': 'max'}).round(2).reset_index()
 
-    #df_aggs.columns = df_aggs.columns.map('_'.join).str.strip()
     df_aggs.columns = ["_".join(item) if not isinstance(item, str) else item.strip() for item in df_aggs.columns]
 
     saveAggSales(df_aggs, return_table_name)
@@ -43,7 +42,6 @@ def saveAggSales(agg_df, return_table_name=None):
 
             if not table_exists:
                 # Step 5: Create the table if it doesn't exist
-                logToFile(str(table_exists) + "\n")
                 create_table_query = f"""
                 CREATE TABLE {return_table_name} (
                     or_date VARCHAR2(100),
@@ -103,6 +101,6 @@ def get_dataframe(table_name):
         cur.close()
 
 def logToFile(str):
-    f = open("/tmp/demofile2.txt", "a")
+    f = open("/tmp/demofile1.txt", "a")
     f.write(str)
     f.close()
