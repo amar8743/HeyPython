@@ -4,8 +4,11 @@ import json
 import oracledb
 import warnings
 import sys
+import time
 
 def get_agg_sales(orders_table_name, details_table_name, return_table_name=None):
+    start_time = time.time()
+
     df_orders = get_dataframe(orders_table_name)
     df_details = get_dataframe(details_table_name)
 
@@ -28,6 +31,9 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
     saveAggSales(df_aggs, return_table_name)
     print("Done processing sales\n")
 
+    execution_time = end_time - start_time
+    logToFile(print(f"Execution Time: {execution_time:.5f} seconds"))
+
 def saveAggSales(agg_df, return_table_name=None):
     if return_table_name:
         con = utils.getconnection()
@@ -41,7 +47,7 @@ def saveAggSales(agg_df, return_table_name=None):
             table_exists = cur.fetchone()[0] > 0
 
             if not table_exists:
-                # Step 5: Create the table if it doesn't exist
+                # Create the table if it doesn't exist
                 create_table_query = f"""
                 CREATE TABLE {return_table_name} (
                     or_date VARCHAR2(100),
@@ -52,14 +58,17 @@ def saveAggSales(agg_df, return_table_name=None):
                 )
                 """
                 cur.execute(create_table_query)
+            else 
+                print(f"Table '{return_table_name}' already exists. Please drop the table or provide a new table name.", file=sys.stderr)
+                return
 
-            # Step 6: Insert the results into the table
+            # Step 5: Insert the results into the table
             for row in agg_df.itertuples(index=False):
                 insert_query = f"INSERT INTO {return_table_name} (or_date, customer, total_sum, total_mean, off_max) VALUES (:1, :2, :3, :4, :5)"
                 param_list = [row.ORDATE_, row.CUSTOMER_, row.TOTAL_sum, row.TOTAL_mean, row.OFF_max]
                 cur.execute(insert_query, param_list)
 
-            # # Commit the transaction
+            # Commit the transaction
             cur.execute("COMMIT")
 
         except oracledb.DatabaseError as e:
@@ -68,18 +77,15 @@ def saveAggSales(agg_df, return_table_name=None):
         finally:
             cur.close()
 
-    # Step 7: Return the results as a JSON object
-    else:
-        return json.dumps(results, default=str)
-
 def get_dataframe(table_name):
-    print(f"get_dataframe: {table_name} \n")
+    print(f"get_dataframe from '{table_name}' \n")
+
     # Step 1: Establish connection
     con = utils.getconnection()
     if con is None:
         print("Failed to establish database connection.")
         return -1
-    #time.sleep(1800)
+
     try:
         # Step 2: Query data from the specified table and column
         query = f"SELECT * FROM {table_name}"
@@ -88,10 +94,8 @@ def get_dataframe(table_name):
 
         # Fetch data and create a DataFrame
         rows = cur.fetchall()
-        #rows = cur.fetch_arrow_all()
         columns = [col[0] for col in cur.description]  # Get column names
 
-        # pyarrow_table = pa.Table.from_arrays(rows, names=columns)
         df = pd.DataFrame(rows, columns=columns)
         return df
     except Exception as e:
