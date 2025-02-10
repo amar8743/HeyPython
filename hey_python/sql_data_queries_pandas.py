@@ -32,7 +32,7 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
     print("Done processing sales\n")
 
     execution_time = time.perf_counter() - start_time
-    logToFile(print(f"Execution Time: {execution_time:.5f} seconds"))
+    logToFile(f"Execution Time: {execution_time:.5f} seconds")
 
 def saveAggSales(agg_df, return_table_name=None):
     if return_table_name:
