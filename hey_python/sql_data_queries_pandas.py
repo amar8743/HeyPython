@@ -6,6 +6,33 @@ import warnings
 import sys
 import time
 
+def get_dataframe(table_name):
+    print(f"get_dataframe from '{table_name}' \n")
+
+    # Step 1: Establish connection
+    con = utils.getconnection()
+    if con is None:
+        print("Failed to establish database connection.")
+        return -1
+
+    try:
+        # Step 2: Query data from the specified table and column
+        query = f"SELECT * FROM {table_name}"
+        cur = con.cursor()
+        cur.execute(query)
+
+        # Fetch data and create a DataFrame
+        rows = cur.fetchall()
+        columns = [col[0] for col in cur.description]  # Get column names
+
+        df = pd.DataFrame(rows, columns=columns)
+        return df
+    except Exception as e:
+        print(f"Error fetching data: {e}", file=sys.stderr)
+        return -1
+    finally:
+        cur.close()
+
 def get_agg_sales(orders_table_name, details_table_name, return_table_name=None):
     start_time = time.perf_counter()
 
@@ -32,7 +59,7 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
     print("Done processing sales\n")
 
     execution_time = time.perf_counter() - start_time
-    logToFile(f"Execution Time: {execution_time:.5f} seconds")
+    logToFile(f"Execution Time: {execution_time:.5f} seconds\n")
 
 def saveAggSales(agg_df, return_table_name=None):
     if return_table_name:
@@ -76,33 +103,6 @@ def saveAggSales(agg_df, return_table_name=None):
             return -1
         finally:
             cur.close()
-
-def get_dataframe(table_name):
-    print(f"get_dataframe from '{table_name}' \n")
-
-    # Step 1: Establish connection
-    con = utils.getconnection()
-    if con is None:
-        print("Failed to establish database connection.")
-        return -1
-
-    try:
-        # Step 2: Query data from the specified table and column
-        query = f"SELECT * FROM {table_name}"
-        cur = con.cursor()
-        cur.execute(query)
-
-        # Fetch data and create a DataFrame
-        rows = cur.fetchall()
-        columns = [col[0] for col in cur.description]  # Get column names
-
-        df = pd.DataFrame(rows, columns=columns)
-        return df
-    except Exception as e:
-        print(f"Error fetching data: {e}", file=sys.stderr)
-        return -1
-    finally:
-        cur.close()
 
 def logToFile(str):
     f = open("/tmp/demofile1.txt", "a")
