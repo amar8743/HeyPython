@@ -1,7 +1,7 @@
 import pandas as pd
 import yfinance as yf
 
-def getData(orders_table_name):
+def get_data(orders_table_name):
     stocks = pd.DataFrame()
     tickers = ['AMZN']
     for ticker in tickers:
