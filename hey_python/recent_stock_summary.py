@@ -34,7 +34,7 @@ def get_data(orders_table_name):
         stocks_to_db.head(3).to_json("demoout6.json", orient="records", indent=4)
     except Exception as e:
         print(traceback.format_exc(), file=sys.stderr)
-    finally:
+    # finally:
         # # Close the connection
         # if cur:
         #     cur.close()
