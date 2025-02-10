@@ -31,8 +31,8 @@ def get_agg_sales(orders_table_name, details_table_name, return_table_name=None)
     saveAggSales(df_aggs, return_table_name)
     print("Done processing sales\n")
 
-    end_time = time.perf_counter()
-    logToFile(print(f"Execution Time: {end_time - start_time:.5f} seconds"))
+    execution_time = time.perf_counter() - start_time
+    logToFile(print(f"Execution Time: {execution_time:.5f} seconds"))
 
 def saveAggSales(agg_df, return_table_name=None):
     if return_table_name:
