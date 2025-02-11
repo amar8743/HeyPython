@@ -8,13 +8,14 @@ def get_data(orders_table_name):
     try:
         stocks = pd.DataFrame()
         tickers = ['ORCL']
-        try:
-            tkr = yf.Ticker(ticker)
-            hist = tkr.history(period='3d')
-            hist['Symbol']=ticker
-            stocks = pd.concat([stocks.dropna(), hist[['Symbol', 'Close']].dropna().rename(columns={'Close': 'Price'})])
-        except Exception:
-            print(traceback.format_exc(), file=sys.stderr)
+        for ticker in tickers:
+            try:
+                tkr = yf.Ticker(ticker)
+                hist = tkr.history(period='3d')
+                hist['Symbol']=ticker
+                stocks = pd.concat([stocks.dropna(), hist[['Symbol', 'Close']].dropna().rename(columns={'Close': 'Price'})])
+            except Exception:
+                print(traceback.format_exc(), file=sys.stderr)
 
         stocks.head(10).to_json("demoout.json", orient="records", indent=4)
 
