@@ -7,7 +7,7 @@ import sys
 def get_data(orders_table_name):
     try:
         stocks = pd.DataFrame()
-        tickers = ['FB', 'ORCL','AMZN']
+        tickers = ['ORCL']
         try:
             tkr = yf.Ticker(ticker)
             hist = tkr.history(period='1d')
