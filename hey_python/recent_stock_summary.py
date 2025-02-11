@@ -10,7 +10,7 @@ def get_data(orders_table_name):
         tickers = ['ORCL']
         try:
             tkr = yf.Ticker(ticker)
-            hist = tkr.history(period='1d')
+            hist = tkr.history(period='3d')
             hist['Symbol']=ticker
             stocks = pd.concat([stocks.dropna(), hist[['Symbol', 'Close']].dropna().rename(columns={'Close': 'Price'})])
         except Exception:
