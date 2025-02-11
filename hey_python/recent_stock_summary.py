@@ -10,13 +10,13 @@ def get_data(orders_table_name):
         tickers = ['AMZN']
         for ticker in tickers:
             try:
-                logToFile('ticker: ' + ticker)
+                logToFile('ticker: ' + ticker + '  ')
                 tkr = yf.Ticker(ticker)
                 hist = tkr.history(period='3d')
                 hist['Symbol']=ticker
                 hist.head(2).to_json("demoout.json", orient="records", indent=4)
-                stocks = pd.concat([stocks.dropna(), hist[['Symbol', 'Close']].dropna().rename(columns={'Close': 'Price'})])
-                logToFile('Done with ticker: ' + ticker)
+                stocks = pd.concat([stocks, hist[['Symbol', 'Close']].rename(columns={'Close': 'Price'})])
+                logToFile('Done with ticker: ' + ticker + '\n')
             except Exception:
                 print(traceback.format_exc(), file=sys.stderr)
 
