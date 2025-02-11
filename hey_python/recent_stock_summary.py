@@ -14,6 +14,7 @@ def get_data(orders_table_name):
                 tkr = yf.Ticker(ticker)
                 hist = tkr.history(period='3d')
                 hist['Symbol']=ticker
+                logToFile('size: ' + hist.size + '   ')
                 hist.head(2).to_json("demoout.json", orient="records", indent=4)
                 stocks = pd.concat([stocks, hist[['Symbol', 'Close']].rename(columns={'Close': 'Price'})])
                 logToFile('Done with ticker: ' + ticker + '\n')
