@@ -7,7 +7,7 @@ import sys
 def get_data(orders_table_name):
     try:
         stocks = pd.DataFrame()
-        tickers = ['ORCL']
+        tickers = ['AMZN']
         for ticker in tickers:
             try:
                 tkr = yf.Ticker(ticker)
