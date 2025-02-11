@@ -10,10 +10,12 @@ def get_data(orders_table_name):
         tickers = ['AMZN']
         for ticker in tickers:
             try:
+                logToFile('ticker: ' + ticker)
                 tkr = yf.Ticker(ticker)
                 hist = tkr.history(period='3d')
                 hist['Symbol']=ticker
                 stocks = pd.concat([stocks.dropna(), hist[['Symbol', 'Close']].dropna().rename(columns={'Close': 'Price'})])
+                logToFile('Done with ticker: ' + ticker)
             except Exception:
                 print(traceback.format_exc(), file=sys.stderr)
 
