@@ -12,7 +12,7 @@ def get_data(orders_table_name):
             tkr = yf.Ticker(ticker)
             hist = tkr.history(period='1d')
             hist['Symbol']=ticker
-            stocks = pd.concat([stocks, hist[['Symbol', 'Close']].rename(columns={'Close': 'Price'})])
+            stocks = pd.concat([stocks.dropna(), hist[['Symbol', 'Close']].dropna().rename(columns={'Close': 'Price'})])
 
         stocks.head(10).to_json("demoout.json", orient="records", indent=4)
 
