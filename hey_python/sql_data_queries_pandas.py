@@ -109,7 +109,8 @@ def saveAggSales(agg_df, return_table_name=None):
             print(f"Error working with the table '{return_table_name}': {e}")
             return -1
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
 def logToFile(str):
     f = open("/tmp/demofile1.txt", "a")
