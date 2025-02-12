@@ -5,14 +5,15 @@ import sys
 import utils
 import oracledb
 
-def get_data(orders_table_name):
+def get_data(tickers_list, duration_in_days, dest_table_name=None):
     try:
         stocks = pd.DataFrame()
-        tickers = ['AAPL', 'TSLA', 'FB', 'ORCL','AMZN']
+        tickers = [item.strip() for item in tickers_list.split(',')]
+        period = get_duration(duration_in_days)
         for ticker in tickers:
             try:
                 tkr = yf.Ticker(ticker)
-                hist = tkr.history(period='10d')
+                hist = tkr.history(period=period)
                 hist['Symbol']=ticker
                 stocks = pd.concat([stocks, hist[['Symbol', 'Close']].rename(columns={'Close': 'Price'})])
             except Exception:
@@ -31,8 +32,8 @@ def get_data(orders_table_name):
         
         stocks_to_db = stocks_to_db.astype({'Dt': str})
         
-        save_df(stocks_to_db)
-        
+        save_df(stocks_to_db, dest_table_name)
+
     except Exception as e:
         print(traceback.format_exc(), file=sys.stderr)
         logToFile(traceback.format_exc())
@@ -86,6 +87,11 @@ def save_df(df, table_name=None):
     finally:
         if cur:
             cur.close()
+
+def get_duration(input):
+    if isinstance(input, (int, float)) or (isinstance(input, str) and input.isdigit()):
+        return str(input) + 'd'
+    raise TypeError(f'Duration value {input}, is not numeric')
 
 def logToFile(str):
     f = open("/tmp/demofile2.txt", "a")
