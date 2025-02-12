@@ -5,20 +5,21 @@ import sys
 import utils
 import oracledb
 
-def get_data(tickers_list, duration_in_days, dest_table_name=None):
+def get_data(ticker_list, duration_in_days, dest_table_name=None):
     try:
         stocks = pd.DataFrame()
-        tickers = [item.strip() for item in tickers_list.split(',')]
+        tickers = [item.strip() for item in ticker_list.split(',')]
         period = get_duration(duration_in_days)
         for ticker in tickers:
-            try:
-                tkr = yf.Ticker(ticker)
-                hist = tkr.history(period=period)
-                hist['Symbol']=ticker
-                stocks = pd.concat([stocks, hist[['Symbol', 'Close']].rename(columns={'Close': 'Price'})])
-            except Exception:
-                logToFile(traceback.format_exc())
-                print(traceback.format_exc(), file=sys.stderr)
+            if ticker:
+                try:
+                    tkr = yf.Ticker(ticker)
+                    hist = tkr.history(period=period)
+                    hist['Symbol']=ticker
+                    stocks = pd.concat([stocks, hist[['Symbol', 'Close']].rename(columns={'Close': 'Price'})])
+                except Exception:
+                    logToFile(traceback.format_exc())
+                    print(traceback.format_exc(), file=sys.stderr)
 
         stocks['Prev'] = stocks.groupby(['Symbol'])['Price'].shift(1)
 
@@ -89,11 +90,11 @@ def save_df(df, table_name=None):
             cur.close()
 
 def get_duration(input):
-    if isinstance(input, (int, float)) or (isinstance(input, str) and input.isdigit()):
+    if str(input).isdigit():
         return str(input) + 'd'
     raise TypeError(f'Duration value {input}, is not numeric')
 
 def logToFile(str):
     f = open("/tmp/demofile2.txt", "a")
-    f.write(str)
+    f.write(str + '\n')
     f.close()
