@@ -4,36 +4,52 @@ import traceback
 import sys
 import utils
 import oracledb
+import time
 
 def get_data(ticker_list, duration_in_days, dest_table_name=None):
     try:
+        start_time = time.perf_counter()
+
         stocks = pd.DataFrame()
+
+        # Step 1: Parse inputs
         tickers = [item.strip() for item in ticker_list.split(',')]
         period = get_duration(duration_in_days)
         for ticker in tickers:
             if ticker:
                 try:
                     tkr = yf.Ticker(ticker)
+                    
+                    # Step 2: Fetch historical data for each ticker 
                     hist = tkr.history(period=period)
                     hist['Symbol']=ticker
+
+                    # Step 3: Append rows corresponding to each ticker to a single df 
                     stocks = pd.concat([stocks, hist[['Symbol', 'Close']].rename(columns={'Close': 'Price'})])
+
                 except Exception:
                     logToFile(traceback.format_exc())
                     print(traceback.format_exc(), file=sys.stderr)
 
+        # Step 4: Add column to track prev day's stock price
         stocks['Prev'] = stocks.groupby(['Symbol'])['Price'].shift(1)
 
-        stocks_to_exclude = stocks[stocks['Price']/stocks['Prev'] < .99]
+        stocks_to_exclude = stocks[stocks['Price']/stocks['Prev'] < .97]
 
         exclude_list = list(set(stocks_to_exclude['Symbol'].tolist()))
 
+        # Step 5: Filter out tickers that observed more than 3% price drop 
         stocks_filtered = stocks[~stocks['Symbol'].isin(exclude_list)][['Symbol', 'Price']]
 
-        stocks_to_db = stocks[['Symbol', 'Price']].reset_index().rename(columns={'Date': 'Dt'}).round(2)
+        stocks_to_db = stocks_filtered[['Symbol', 'Price']].reset_index().rename(columns={'Date': 'Dt'}).round(2)
         
         stocks_to_db = stocks_to_db.astype({'Dt': str})
         
+        # Step 6: Save formatted columns in table
         save_df(stocks_to_db, dest_table_name)
+
+        execution_time = time.perf_counter() - start_time
+        logToFile(f"Execution Time: {execution_time:.5f} seconds")
 
     except Exception as e:
         print(traceback.format_exc(), file=sys.stderr)
@@ -47,6 +63,7 @@ def save_df(df, table_name=None):
     con = utils.getconnection()
     if con is None:
         print("Failed to establish database connection.")
+        logToFile(traceback.format_exc())
         return -1
 
     try:
@@ -84,6 +101,7 @@ def save_df(df, table_name=None):
 
     except oracledb.DatabaseError as e:
         print(f"Error working with the table '{dest_table}': {e}")
+        logToFile(traceback.format_exc())
         return -1
     finally:
         if cur:
