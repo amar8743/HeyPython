@@ -1,4 +1,5 @@
 import pandas as pd
+import traceback
 import utils
 import json
 import oracledb
@@ -34,39 +35,56 @@ def get_dataframe(table_name):
         cur.close()
 
 def get_agg_sales(orders_table_name, details_table_name, return_table_name=None):
-    start_time = time.perf_counter()
+    """
+    Aggregates data from orders and order details tables, to generate summary 
+    of
 
-    # Read data from tables
-    df_orders = get_dataframe(orders_table_name)
-    df_details = get_dataframe(details_table_name)
+    Parameters:
+    - orders_table_name (str): Table to read orders data from
+    - details_table_name (str): Table to read order details data from
+    - return_table_name (str): Table name to store results in
 
-    # Join the two tables
-    df_orders_details = df_orders.merge(df_details)
+    Returns:
+    - void
+    """
+    try:
+        start_time = time.perf_counter()
 
-    # Add total col to track final price of each lineitem after discount
-    df_orders_details['TOTAL'] = df_orders_details.PRICE * df_orders_details.QUANTITY * (1 - df_orders_details.DISCOUNT/100)
+        # Read data from tables
+        df_orders = get_dataframe(orders_table_name)
+        df_details = get_dataframe(details_table_name)
 
-    # Add off col to track final discount amount for each lineitem
-    df_orders_details['OFF'] = df_orders_details.PRICE * df_orders_details.QUANTITY * (df_orders_details.DISCOUNT/100)
+        # Join the two tables
+        df_orders_details = df_orders.merge(df_details)
 
-    df_orders_details = df_orders_details.round(2)
+        # Add total col to track final price of each lineitem after discount
+        df_orders_details['TOTAL'] = df_orders_details.PRICE * df_orders_details.QUANTITY * (1 - df_orders_details.DISCOUNT/100)
 
-    # Use only columns of interest
-    df_sales = df_orders_details[['ORDATE','EMPL', 'TOTAL', 'OFF']]
+        # Add off col to track final discount amount for each lineitem
+        df_orders_details['OFF'] = df_orders_details.PRICE * df_orders_details.QUANTITY * (df_orders_details.DISCOUNT/100)
 
-    df_date_empl = df_sales.groupby(['ORDATE','EMPL']).sum()
+        df_orders_details = df_orders_details.round(2)
 
-    # Calculate total sales per employee per day
-    df_aggs = df_sales.groupby(['ORDATE','EMPL']).agg({'TOTAL': ['sum', 'mean'], 'OFF': 'max'}).round(2).reset_index()
+        # Use only columns of interest
+        df_sales = df_orders_details[['ORDATE','EMPL', 'TOTAL', 'OFF']]
 
-    df_aggs.columns = ["_".join(item) if not isinstance(item, str) else item.strip() for item in df_aggs.columns]
+        df_date_empl = df_sales.groupby(['ORDATE','EMPL']).sum()
 
-    # Save the aggregated data to table
-    saveAggSales(df_aggs, return_table_name)
-    print("Done processing sales\n")
+        # Calculate total sales per employee per day
+        df_aggs = df_sales.groupby(['ORDATE','EMPL']).agg({'TOTAL': ['sum', 'mean'], 'OFF': 'max'}).round(2).reset_index()
 
-    execution_time = time.perf_counter() - start_time
-    logToFile(f"Execution Time: {execution_time:.5f} seconds\n")
+        df_aggs.columns = ["_".join(item) if not isinstance(item, str) else item.strip() for item in df_aggs.columns]
+
+        # Save the aggregated data to table
+        saveAggSales(df_aggs, return_table_name)
+        print("Done processing sales\n")
+
+        execution_time = time.perf_counter() - start_time
+        logToFile(f"Execution Time: {execution_time:.5f} seconds\n")
+    
+    except Exception as e:
+        print(traceback.format_exc(), file=sys.stderr)
+        logToFile(traceback.format_exc())
 
 def saveAggSales(agg_df, return_table_name=None):
     if return_table_name:

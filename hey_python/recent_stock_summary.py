@@ -7,6 +7,20 @@ import oracledb
 import time
 
 def get_data(ticker_list, duration_in_days, dest_table_name=None):
+    """
+    Persists stock price for tickers with price trends within threshold for a 
+    given period, in database table
+
+    Parameters:
+    - ticker_list (str): Comma separated list of ticker symbols
+    - duration_in_days (str): Numeric string of historical number of days to 
+    fetch relative to the current date 
+    - dest_table_name (str): Table name to store results in. Defaults to 
+    'stocks'.
+
+    Returns:
+    - void
+    """
     try:
         start_time = time.perf_counter()
 
@@ -34,18 +48,19 @@ def get_data(ticker_list, duration_in_days, dest_table_name=None):
         # Step 4: Add column to track prev day's stock price
         stocks['Prev'] = stocks.groupby(['Symbol'])['Price'].shift(1)
 
+        # Step 5: Identify stocks that observed fall in price by more than 3%, within time period
         stocks_to_exclude = stocks[stocks['Price']/stocks['Prev'] < .97]
 
         exclude_list = list(set(stocks_to_exclude['Symbol'].tolist()))
 
-        # Step 5: Filter out tickers that observed more than 3% price drop 
+        # Step 6: Filter out rows belonging to excluded ticker symbols
         stocks_filtered = stocks[~stocks['Symbol'].isin(exclude_list)][['Symbol', 'Price']]
 
         stocks_to_db = stocks_filtered[['Symbol', 'Price']].reset_index().rename(columns={'Date': 'Dt'}).round(2)
         
         stocks_to_db = stocks_to_db.astype({'Dt': str})
         
-        # Step 6: Save formatted columns in table
+        # Step 7: Save formatted columns in table
         save_df(stocks_to_db, dest_table_name)
 
         execution_time = time.perf_counter() - start_time
